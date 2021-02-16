@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  redis-overcommit:
+    build: https://github.com/bkuhl/redis-overcommit-on-host.git
+    restart: 'no'
+    privileged: true
+    volumes:
+      - /proc/sys/vm:/mnt/vm
+
+  redis:
+    image: redis:alpine
+    container_name: cache
+    restart: 'always'
+    expose:
+      - 6379
+    depends_on:
+      - redis-overcommit
+
+  app:
+    build: ./
+    volumes:
+      - ./:/var/www/app
+    ports:
+      - 3000:3000
+    links:
+      - redis
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - REDIS_URL=redis://cache
+    command: sh -c 'yarn && yarn start'

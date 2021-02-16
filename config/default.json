@@ -3,5 +3,8 @@
   "finkio": {
     "enabled": false,
     "key": ""
+  },
+  "server": {
+    "port": 3000
   }
 }
