@@ -1,0 +1,5 @@
+node_modules
+*-error.lock
+config/development.json
+*.cache
+yarn.lock
