@@ -9,7 +9,7 @@ const app = fastify.default();
 
 async function run() {
   app.register(server.createHandler());
-  await app.listen(config.get('server.port'));
+  await app.listen(config.get('server.port'), '0.0.0.0');
 }
 
 run();
