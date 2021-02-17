@@ -1,14 +1,13 @@
-import * as fastify from 'fastify';
+import fastify from 'fastify';
 import config from 'config';
-import { ApolloServer } from 'apollo-server-fastify';
-import { typeDefs, resolvers } from './graphql';
+import mercurius from 'mercurius';
+import { resolvers, schema } from './graphql';
 
-const server = new ApolloServer({ resolvers, typeDefs });
+const app = fastify();
 
-const app = fastify.default();
+app.register(mercurius, { resolvers, schema, graphiql: true });
 
 async function run() {
-  app.register(server.createHandler());
   await app.listen(config.get('server.port'), '0.0.0.0');
 }
 

@@ -1,34 +1,32 @@
 import fetch from 'node-fetch';
-import * as cache from '../helpers/cache';
+
+import * as cache from '../../helpers/cache';
+import { logger } from '../../helpers/logger';
 import { Instrument } from './types';
 
-interface FetchInstrument {
-  code: string;
-}
+export async function fetchInstruments() {
+  const cacheOptions = { filename: `instruments.json`, path: `${__dirname}/.cache/instruments` };
 
-export async function fetchInstrument({ code }: FetchInstrument) {
-  const cacheOptions = { filename: `${code}.json`, path: `${__dirname}/.cache/instruments` };
-  const cachedInstrument = cache.readFromCache<Instrument>(cacheOptions);
+  cache.pruneCache({ path: cacheOptions.path });
+
+  const cachedInstrument = cache.readFromCache<Instrument[]>(cacheOptions);
 
   if (typeof cachedInstrument !== 'undefined') {
+    logger.info(`Using trading212.com FS cache (fetchInstruments)`);
     return cachedInstrument;
   }
 
-  const instrumentRes = await fetch(`https://live.trading212.com/rest/instruments/${code}`);
+  const instrumentRes = await fetch(`https://live.trading212.com/rest/instruments`);
 
   if (!instrumentRes.ok) {
-    throw new Error(`Unable to fetch instrument from T212: ${code}`);
+    throw new Error(`Unable to fetch all instruments from T212`);
   }
 
-  const instrumentBody = await instrumentRes.text();
+  const instruments: Instrument[] = await instrumentRes.json();
 
-  if (!instrumentBody.length) {
-    throw new Error(`Instrument not found with T212 code: ${code}`);
-  }
+  cache.writeToCache(instruments, cacheOptions);
 
-  const instrument: Instrument = JSON.parse(instrumentBody);
+  logger.info(`Cached trading212.com instruments`);
 
-  cache.writeToCache(instrument, cacheOptions);
-
-  return instrument;
+  return instruments;
 }

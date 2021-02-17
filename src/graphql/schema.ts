@@ -1,6 +1,4 @@
-import { gql } from 'apollo-server-fastify';
-
-export const typeDefs = gql`
+export const schema = `
   type Dividend {
     dividendYield: Float
     isin: String
@@ -10,6 +8,6 @@ export const typeDefs = gql`
 
   # "Query" is reserved. It lists all available queries a client can execute
   type Query {
-    dividend: Dividend
+    dividend(isin: String!): Dividend
   }
 `;

@@ -4,6 +4,9 @@
     "enabled": false,
     "key": ""
   },
+  "redis": {
+    "ttl": 86400
+  },
   "server": {
     "port": 3000
   }
