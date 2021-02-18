@@ -7,6 +7,8 @@ import { Instrument } from './types';
 export async function fetchInstruments() {
   const cacheOptions = { filename: `instruments.json`, path: `${__dirname}/.cache/instruments` };
 
+  logger.info(`Fetching instruments from trading212.com`);
+
   cache.pruneCache({ path: cacheOptions.path });
 
   const cachedInstrument = cache.readFromCache<Instrument[]>(cacheOptions);
@@ -19,7 +21,7 @@ export async function fetchInstruments() {
   const instrumentRes = await fetch(`https://live.trading212.com/rest/instruments`);
 
   if (!instrumentRes.ok) {
-    throw new Error(`Unable to fetch all instruments from T212`);
+    throw new Error(`Unable to fetch all instruments from trading212.com`);
   }
 
   const instruments: Instrument[] = await instrumentRes.json();

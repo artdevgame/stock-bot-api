@@ -5,57 +5,30 @@ import { parse, HTMLElement } from 'node-html-parser';
 import { NotADividendStockError } from '../../errors/NotADividendStockError';
 import * as cache from '../../helpers/cache';
 import { logger } from '../../helpers/logger';
-import { default as redis } from '../../helpers/redis';
-import { Dividend, FetchDividend } from '../types';
+import { round } from '../../helpers/number';
+import { Dividend, FetchDividend, FetchInstrumentWithIsin, Instrument } from '../types';
 import { SearchResults, Quote } from './types';
 
 const { ContentType } = cache;
 
-interface FetchInstrument {
+interface FetchSearchResult {
   isin: string;
 }
 
 interface FetchStockInfo {
   isin: string;
-  searchResult: Quote;
+  link: string;
 }
 
 interface ParseDividend {
   html: string;
 }
 
-async function fetchStockInfo({ isin, searchResult }: FetchStockInfo) {
-  const { link, name, symbol } = searchResult;
-
-  const cacheOptions = {
-    contentType: ContentType.TEXT,
-    filename: `stock-info.html`,
-    path: `${__dirname}/.cache/${isin}`,
-  };
-  const info = cache.readFromCache<string>(cacheOptions);
-
-  if (typeof info !== 'undefined') {
-    logger.info(`Using investing.com FS cache (fetchStockInfo): ${name} (${symbol})`);
-    return info;
-  }
-
-  const stockInfoRes = await fetch(`https://uk.investing.com${link}`);
-
-  if (!stockInfoRes.ok) {
-    throw new Error(`Unable to retrieve stock info from investing.com: ${name} (${symbol})`);
-  }
-
-  const stockInfo = await stockInfoRes.text();
-
-  cache.writeToCache(stockInfo, cacheOptions);
-
-  logger.info(`Cached investing.com stock info page: ${name} (${symbol})`);
-
-  return stockInfo;
-}
-
-async function fetchSearchResult({ isin }: FetchInstrument): Promise<Quote> {
+async function fetchSearchResult({ isin }: FetchSearchResult): Promise<Quote> {
   const cacheOptions = { filename: `search-result.json`, path: `${__dirname}/.cache/${isin}` };
+
+  cache.pruneCache({ path: cacheOptions.path });
+
   const quote = cache.readFromCache<Quote>(cacheOptions);
 
   if (typeof quote !== 'undefined') {
@@ -96,11 +69,42 @@ async function fetchSearchResult({ isin }: FetchInstrument): Promise<Quote> {
   return quotes[0];
 }
 
+async function fetchStockInfo({ isin, link }: FetchStockInfo) {
+  const cacheOptions = {
+    contentType: ContentType.TEXT,
+    filename: `stock-info.html`,
+    path: `${__dirname}/.cache/${isin}`,
+  };
+
+  cache.pruneCache({ path: cacheOptions.path });
+
+  const info = cache.readFromCache<string>(cacheOptions);
+
+  if (typeof info !== 'undefined') {
+    logger.info(`Using investing.com FS cache (fetchStockInfo): ${isin}`);
+    return info;
+  }
+
+  const stockInfoRes = await fetch(`https://uk.investing.com${link}`);
+
+  if (!stockInfoRes.ok) {
+    throw new Error(`Unable to retrieve stock info from investing.com: ${isin}`);
+  }
+
+  const stockInfo = await stockInfoRes.text();
+
+  cache.writeToCache(stockInfo, cacheOptions);
+
+  logger.info(`Cached investing.com stock info page: ${isin}`);
+
+  return stockInfo;
+}
+
 function getDividendYield(el: HTMLElement) {
   const { text } = el;
 
   const value = text.includes('(') ? text.replace(/.*\((\d.+)\%\)/, '$1') : text.replace('%', '');
-  return Number(value) / 100;
+  return round(Number(value) / 100, 8);
 }
 
 function parseDividend({ html }: ParseDividend) {
@@ -117,7 +121,7 @@ function parseDividend({ html }: ParseDividend) {
 
   if (typeof dividendYieldContainer !== 'undefined') {
     const dividendYield = getDividendYield(dividendYieldContainer.querySelector('.float_lang_base_2'));
-    if (!isNaN(dividendYield)) {
+    if (isNaN(dividendYield)) {
       throw new NotADividendStockError(`No yield information from investing.com`);
     }
     dividend.dividendYield = dividendYield;
@@ -128,38 +132,30 @@ function parseDividend({ html }: ParseDividend) {
   return dividend;
 }
 
-export async function fetchDividend({ isin }: FetchDividend): Promise<Dividend> {
-  const cachedResult = await redis.getAsync(isin);
+export async function fetchDividend({ instrument }: FetchDividend) {
+  const { isin } = instrument;
 
-  if (cachedResult !== null) {
-    logger.info(`Using Redis cache: ${isin}`);
-    return JSON.parse(cachedResult);
-  }
-
-  logger.info(`Fetching dividend info from investing.com: ${isin}`);
-
-  cache.pruneCache({ path: `${__dirname}/.cache/${isin}` });
+  logger.info(`Fetching dividend information from investing.com: ${isin}`);
 
   const searchResult = await fetchSearchResult({ isin });
-  const instrument = {
-    isin,
-    name: searchResult.name,
-    symbol: searchResult.symbol,
-  };
-
-  const stockInfo = await fetchStockInfo({ isin, searchResult });
+  const stockInfo = await fetchStockInfo({ isin, link: searchResult.link });
   const dividend = parseDividend({ html: stockInfo });
-  const result = { ...dividend, instrument };
+  const { dividendYield } = dividend;
 
-  await redis.setAsync(isin, JSON.stringify(result));
-
-  logger.info(`Redis cached result: ${isin}`);
-
-  return result;
+  return { dividendYield } as Dividend;
 }
 
-(async () => {
-  const dividend = await fetchDividend({ isin: 'CA86730L1094' });
-  logger.info(dividend);
-  process.exit();
-})();
+export async function fetchInstrumentWithIsin({ isin }: FetchInstrumentWithIsin) {
+  try {
+    logger.info(`Fetching instrument from investing.com: ${isin}`);
+    const searchResult = await fetchSearchResult({ isin });
+
+    return {
+      isin,
+      name: searchResult.name,
+      symbol: searchResult.symbol,
+    } as Instrument;
+  } catch (err) {
+    throw new Error(`Unable to find instrument on investing.com: ${isin}`);
+  }
+}

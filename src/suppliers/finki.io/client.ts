@@ -26,9 +26,10 @@ interface FetchDividendYield {
 
 async function calculateDividendYield({ cacheOptions, symbol, isin }: CalculateDividendYield) {
   try {
+    const apiKey = config.get('suppliers.finkio.key');
     const dividendInfo = await Promise.all([
-      fetch(`https://finki.io/callAPI.php?isin=${isin}&key=${config.get('finkio.key')}&function=dividendAnnual`),
-      fetch(`https://finki.io/callAPI.php?isin=${isin}&key=${config.get('finkio.key')}&function=bid`),
+      fetch(`https://finki.io/callAPI.php?isin=${isin}&key=${apiKey}&function=dividendAnnual`),
+      fetch(`https://finki.io/callAPI.php?isin=${isin}&key=${apiKey}&function=bid`),
     ]);
 
     const [dividendAnnual, currentSellPrice] = await Promise.all(
@@ -80,8 +81,9 @@ async function fetchDividendYield({ isin, symbol }: FetchDividendYield) {
     return cachedDividendYield;
   }
 
+  const apiKey = config.get('suppliers.finkio.key');
   const dividendYieldRes = await fetch(
-    `https://finki.io/callAPI.php?isin=${isin}&key=${config.get('finkio.key')}&function=dividendYield`,
+    `https://finki.io/callAPI.php?isin=${isin}&key=${apiKey}&function=dividendYield`,
   );
 
   if (!dividendYieldRes.ok) {

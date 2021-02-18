@@ -25,7 +25,7 @@ export async function fetchCompany({ isin }: FetchCompany): Promise<Company> {
   );
 
   if (!companyRes.ok) {
-    throw new Error(`Unable to retrieve company fundamentals from T212 with ISIN: ${isin}`);
+    throw new Error(`Unable to retrieve company fundamentals from trading212.com with ISIN: ${isin}`);
   }
 
   const company: Company = await companyRes.json();
