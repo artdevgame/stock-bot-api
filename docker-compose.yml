@@ -17,7 +17,7 @@ services:
     depends_on:
       - redis-overcommit
 
-  app:
+  api:
     build: ./
     volumes:
       - ./:/var/www/app

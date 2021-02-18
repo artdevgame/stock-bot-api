@@ -1,4 +1,3 @@
-import config from 'config';
 import { default as dayjs } from 'dayjs';
 import fs from 'fs';
 
@@ -57,7 +56,6 @@ export function readFromCache<CachedValue>({
   const cachePath = getCachePath({ filename, path });
 
   if (fs.existsSync(cachePath)) {
-    config.get('debug') && console.log('[CACHE HIT]', cachePath);
     const contents = fs.readFileSync(cachePath, { encoding: 'utf8' });
     return contentType === ContentType.JSON ? JSON.parse(contents) : contents;
   }

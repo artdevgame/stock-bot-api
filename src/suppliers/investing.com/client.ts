@@ -2,6 +2,7 @@ import FormData from 'form-data';
 import fetch from 'node-fetch';
 import { parse, HTMLElement } from 'node-html-parser';
 
+import { NotADividendStockError } from '../../errors/NotADividendStockError';
 import * as cache from '../../helpers/cache';
 import { logger } from '../../helpers/logger';
 import { default as redis } from '../../helpers/redis';
@@ -117,8 +118,9 @@ function parseDividend({ html }: ParseDividend) {
   if (typeof dividendYieldContainer !== 'undefined') {
     const dividendYield = getDividendYield(dividendYieldContainer.querySelector('.float_lang_base_2'));
     if (!isNaN(dividendYield)) {
-      dividend.dividendYield = dividendYield;
+      throw new NotADividendStockError(`No yield information from investing.com`);
     }
+    dividend.dividendYield = dividendYield;
   } else {
     logger.warn(`Unable to find the dividend yield container from investing.com html`);
   }

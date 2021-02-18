@@ -1,9 +1,9 @@
-import fetch, { Response } from 'node-fetch';
 import config from 'config';
-import { round } from '../helpers/number';
-import * as cache from '../helpers/cache';
-import { CacheOptions, ContentType } from '../helpers/cache';
-import { Dividend, FetchDividend } from '../types';
+import fetch, { Response } from 'node-fetch';
+
+import * as cache from '../../helpers/cache';
+import { CacheOptions, ContentType } from '../../helpers/cache';
+import { round } from '../../helpers/number';
 
 interface CalculateDividendYield {
   cacheOptions: CacheOptions;
@@ -123,7 +123,3 @@ export async function fetchDividendsForSymbol({ symbol }: FetchDividendsForSymbo
     return 0;
   }
 }
-
-export async function fetchDividend({ isin }: FetchDividend): Promise<Dividend> {}
-
-export async function fetchInstrument({ isin }: FetchInstrument): Promise<Instrument> {}

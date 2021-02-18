@@ -1,3 +1,4 @@
+import { NotADividendStockError } from '../../errors/NotADividendStockError';
 import { logger } from '../../helpers/logger';
 import redis from '../../helpers/redis';
 import { Dividend, FetchDividend } from '../types';
@@ -28,8 +29,14 @@ export async function fetchDividend({ isin }: FetchDividend): Promise<Dividend> 
 
   const company = await fetchCompany({ isin });
   const { keyRatios } = company;
+  const { dividendYield } = keyRatios;
+
+  if (dividendYield < 0) {
+    throw new NotADividendStockError(`No yield information from trading212.com: ${isin}`);
+  }
+
   const result = {
-    dividendYield: keyRatios.dividendYield < 0 ? 0 : keyRatios.dividendYield,
+    dividendYield,
     instrument: {
       name: instrument.prettyName,
       isin,
