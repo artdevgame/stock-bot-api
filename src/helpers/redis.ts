@@ -1,26 +1,25 @@
 import config from 'config';
-import redis from 'redis';
-import { promisify } from 'util';
+import Redis from 'ioredis';
 
 interface SetAsyncOptions {
   ttl: number;
 }
 
-const client = redis.createClient(process.env.REDIS_URL!);
+export const client = new Redis(process.env.REDIS_URL!);
 
-export default {
-  ...client,
-  getAsync: promisify(client.get).bind(client),
-  setAsync: (
-    key: string,
-    value: string,
-    options: SetAsyncOptions = {
-      ttl: config.get('redis.ttl'),
-    },
-  ) => {
-    if (options.ttl === Infinity) {
-      return promisify(client.set).bind(client)(key, value);
-    }
-    return promisify(client.setex).bind(client)(key, options.ttl, value);
+export function readFromRedis(key: string) {
+  return client.get(key);
+}
+
+export function writeToRedis(
+  key: string,
+  value: string,
+  options: SetAsyncOptions = {
+    ttl: config.get('redis.ttl'),
   },
-};
+) {
+  if (options.ttl === Infinity) {
+    return client.set(key, value);
+  }
+  return client.set(key, value, 'EX', options.ttl);
+}

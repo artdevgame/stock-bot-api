@@ -1,12 +1,18 @@
+import { fetchDividend, fetchInstrumentWithIsin, fetchInstrumentWithSymbol } from '../suppliers';
+import { FetchDividend, FetchInstrumentWithIsin, FetchInstrumentWithSymbol } from '../suppliers/types';
+
 export const resolvers = {
   Query: {
-    dividend: async (obj: unknown, { isin }: { isin: string }) => {
-      return {
-        dividendYield: 0.045,
-        isin: 'US7561091049',
-        name: 'Realty Income',
-        symbol: 'O',
-      };
+    fetchDividend: async (obj: unknown, { instrument }: FetchDividend) => {
+      return fetchDividend({ instrument });
+    },
+
+    fetchInstrumentWithIsin: async (obj: unknown, { isin }: FetchInstrumentWithIsin) => {
+      return fetchInstrumentWithIsin({ isin });
+    },
+
+    fetchInstrumentWithSymbol: async (obj: unknown, { symbol }: FetchInstrumentWithSymbol) => {
+      return fetchInstrumentWithSymbol({ symbol });
     },
   },
 };

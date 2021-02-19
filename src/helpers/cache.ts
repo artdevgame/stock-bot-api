@@ -12,6 +12,9 @@ interface PruneCache {
   path: string;
 }
 
+export const NeverPurge = 'never';
+export type NeverPurge = typeof NeverPurge;
+
 export enum ContentType {
   JSON = 'application/json',
   TEXT = 'text/plain',
@@ -22,7 +25,7 @@ export type CacheOptions = GetCachePath & {
 };
 
 export type WriteCacheOptions = CacheOptions & {
-  purgeDate?: string;
+  purgeDate?: string | NeverPurge;
 };
 
 const PURGE_FILENAME = '.purgeAt';
@@ -74,5 +77,8 @@ export function writeToCache(
   const contents = contentType === ContentType.JSON ? JSON.stringify(value, null, 2) : String(value);
 
   fs.writeFileSync(cachePath, contents, { encoding: 'utf8', flag: 'w' });
-  fs.writeFileSync(`${path}/${PURGE_FILENAME}`, purgeDate, { encoding: 'utf8', flag: 'w' });
+
+  if (purgeDate !== NeverPurge) {
+    fs.writeFileSync(`${path}/${PURGE_FILENAME}`, purgeDate, { encoding: 'utf8', flag: 'w' });
+  }
 }

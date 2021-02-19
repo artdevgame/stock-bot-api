@@ -4,4 +4,4 @@
 # Restart Windows NAT service to free up all the goobled port ranges
 
 Start-Process powershell -Verb runas
-net stop winnat && net start winnat && docker-compose up
+restart-service WinNat

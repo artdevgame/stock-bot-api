@@ -11,6 +11,11 @@
     "ttl": 86400
   },
   "server": {
+    "apiLimit": {
+      "banAfterMaxHttp429Responses": 30,
+      "maxRequestsPerMinute": 300
+    },
+    "authKey": "",
     "port": 3000
   },
   "suppliers": {

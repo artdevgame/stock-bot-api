@@ -4,7 +4,7 @@ import fs from 'fs';
 import { logger } from '../helpers/logger';
 import * as promiseHelper from '../helpers/promise';
 import { DestructuredPromise } from '../helpers/promise';
-import redis from '../helpers/redis';
+import { readFromRedis, writeToRedis } from '../helpers/redis';
 import { Dividend, FetchDividend, FetchInstrumentWithIsin, FetchInstrumentWithSymbol, Instrument } from './types';
 
 type DividendMaxClient = typeof import('./dividendmax.com/client');
@@ -31,11 +31,17 @@ async function getSuppliers(suppliers: string[]) {
   return Promise.all(promises);
 }
 
-async function fetchDividend({ instrument }: FetchDividend) {
+export async function cacheInstrument(intstrument: Instrument) {
+  const value = JSON.stringify(intstrument);
+  await writeToRedis(`instrument-symbol-${intstrument.symbol}`, value, { ttl: Infinity });
+  await writeToRedis(`instrument-isin-${intstrument.isin}`, value, { ttl: Infinity });
+}
+
+export async function fetchDividend({ instrument }: FetchDividend) {
   logger.info(`Fetching dividend with instrument: ${JSON.stringify(instrument)}`);
 
   const { isin } = instrument;
-  const cachedDividend = await redis.getAsync(`dividend-${isin}`);
+  const cachedDividend = await readFromRedis(`dividend-${isin}`);
 
   if (cachedDividend) {
     logger.info(`Retrieved dividend from Redis: ${isin}`);
@@ -53,15 +59,15 @@ async function fetchDividend({ instrument }: FetchDividend) {
 
   const dividend: Dividend = await promiseHelper.first<Dividend>(queue);
 
-  await redis.setAsync(`dividend-${isin}`, JSON.stringify(dividend));
+  await writeToRedis(`dividend-${isin}`, JSON.stringify(dividend));
 
   return dividend;
 }
 
-async function fetchInstrumentWithIsin({ isin }: FetchInstrumentWithIsin) {
+export async function fetchInstrumentWithIsin({ isin }: FetchInstrumentWithIsin) {
   logger.info(`Fetching instrument with ISIN: ${isin}`);
 
-  const cachedInstrument = await redis.getAsync(`instrument-isin-${isin}`);
+  const cachedInstrument = await readFromRedis(`instrument-isin-${isin}`);
 
   if (cachedInstrument) {
     logger.info(`Retrieved instrument from Redis: fetchInstrumentWithIsin(${isin})`);
@@ -84,10 +90,10 @@ async function fetchInstrumentWithIsin({ isin }: FetchInstrumentWithIsin) {
   return instrument;
 }
 
-async function fetchInstrumentWithSymbol({ symbol }: FetchInstrumentWithSymbol) {
+export async function fetchInstrumentWithSymbol({ symbol }: FetchInstrumentWithSymbol) {
   logger.info(`Fetching instrument with symbol: ${symbol}`);
 
-  const cachedInstrument = await redis.getAsync(`instrument-symbol-${symbol}`);
+  const cachedInstrument = await readFromRedis(`instrument-symbol-${symbol}`);
 
   if (cachedInstrument) {
     logger.info(`Retrieved instrument from Redis: fetchInstrumentWithSymbol(${symbol})`);
@@ -100,7 +106,7 @@ async function fetchInstrumentWithSymbol({ symbol }: FetchInstrumentWithSymbol) 
     if (typeof supplier === 'undefined' || !('fetchInstrumentWithSymbol' in supplier)) {
       return Promise.reject(`Supplier client has not implemented 'fetchInstrumentWithSymbol'`);
     }
-    // @ts-ignore
+    // @ts-ignore todo: remove this when at least one of the suppliers implements it
     return supplier.fetchInstrumentWithSymbol({ symbol });
   });
 
@@ -110,19 +116,3 @@ async function fetchInstrumentWithSymbol({ symbol }: FetchInstrumentWithSymbol) 
 
   return instrument;
 }
-
-export async function cacheInstrument(intstrument: Instrument) {
-  const value = JSON.stringify(intstrument);
-  await redis.setAsync(`instrument-symbol-${intstrument.symbol}`, value, { ttl: Infinity });
-  await redis.setAsync(`instrument-isin-${intstrument.isin}`, value, { ttl: Infinity });
-}
-
-(async () => {
-  const instrument = await fetchInstrumentWithIsin({ isin: 'IE00BDD48R20' });
-  logger.info(JSON.stringify(instrument));
-
-  const dividend = await fetchDividend({ instrument });
-  logger.info(JSON.stringify(dividend));
-
-  process.exit(0);
-})();
