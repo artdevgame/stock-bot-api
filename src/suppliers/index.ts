@@ -102,13 +102,12 @@ export async function fetchInstrumentWithSymbol({ symbol }: FetchInstrumentWithS
 
   const suppliers = await getSuppliers(config.get('instruments.fetchWithSymbol') as string[]);
 
-  const queue = suppliers.map((supplier) => {
-    if (typeof supplier === 'undefined' || !('fetchInstrumentWithSymbol' in supplier)) {
-      return Promise.reject(`Supplier client has not implemented 'fetchInstrumentWithSymbol'`);
+  const queue: DestructuredPromise<Instrument>[] = suppliers.reduce((prev, supplier) => {
+    if (typeof supplier !== 'undefined' && 'fetchInstrumentWithSymbol' in supplier) {
+      return [...prev, [supplier.fetchInstrumentWithSymbol, { symbol }] as DestructuredPromise<Instrument>];
     }
-    // @ts-ignore todo: remove this when at least one of the suppliers implements it
-    return supplier.fetchInstrumentWithSymbol({ symbol });
-  });
+    return prev;
+  }, [] as DestructuredPromise<Instrument>[]);
 
   const instrument: Instrument = await promiseHelper.first<Instrument>(queue);
 

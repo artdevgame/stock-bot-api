@@ -50,8 +50,6 @@ async function fetchSearchResult({ isin, symbol }: FetchSearchResult): Promise<S
 
   const searchResultRes = await fetch(`https://www.dividendmax.com/suggest.json?q=${symbol}`);
 
-  console.log(searchResultRes);
-
   if (!searchResultRes.ok) {
     throw new Error(`Unable to retrieve search result from dividendmax.com: ${isin} (${symbol})`);
   }

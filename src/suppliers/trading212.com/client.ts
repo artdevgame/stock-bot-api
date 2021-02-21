@@ -1,7 +1,7 @@
 import { NotADividendStockError } from '../../errors/NotADividendStockError';
 import { logger } from '../../helpers/logger';
 import { round } from '../../helpers/number';
-import { Dividend, FetchDividend, FetchInstrumentWithIsin, Instrument } from '../types';
+import { Dividend, FetchDividend, FetchInstrumentWithIsin, FetchInstrumentWithSymbol, Instrument } from '../types';
 import { fetchCompany } from './companies';
 import { fetchInstruments } from './instruments';
 
@@ -36,5 +36,23 @@ export async function fetchInstrumentWithIsin({ isin }: FetchInstrumentWithIsin)
     isin,
     name: instrument.prettyName,
     symbol: instrument.name,
+  };
+}
+
+export async function fetchInstrumentWithSymbol({ symbol }: FetchInstrumentWithSymbol): Promise<Instrument> {
+  const instruments = await fetchInstruments();
+
+  logger.info(`Filtering trading212.com instruments: ${symbol}`);
+
+  const instrument = instruments.find((i) => i.name === symbol);
+
+  if (typeof instrument === 'undefined') {
+    throw new Error(`Unable to find instrument on trading212.com: ${symbol}`);
+  }
+
+  return {
+    isin: instrument.isin,
+    name: instrument.prettyName,
+    symbol,
   };
 }

@@ -5,7 +5,7 @@
   },
   "instruments": {
     "fetchWithIsin": ["trading212.com", "investing.com"],
-    "fetchWithSymbol": []
+    "fetchWithSymbol": ["trading212.com"]
   },
   "redis": {
     "ttl": 86400
