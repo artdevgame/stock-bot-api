@@ -29,6 +29,7 @@
     "typescript": "4.1.5"
   },
   "dependencies": {
+    "@octokit/rest": "18.2.1",
     "check-ticker-symbol": "1.0.0",
     "config": "3.3.3",
     "dayjs": "1.10.4",

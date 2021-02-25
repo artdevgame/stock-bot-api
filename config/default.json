@@ -1,4 +1,13 @@
 {
+  "backup": {
+    "github": {
+      "accessToken": "",
+      "base": "main",
+      "head": "main",
+      "owner": "",
+      "repo": ""
+    }
+  },
   "debug": false,
   "dividends": {
     "fetchDividend": ["trading212.com", "investing.com", "dividendmax.com"]

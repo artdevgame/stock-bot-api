@@ -142,7 +142,6 @@ If the consumer continues to make requests whilst limited, and exceeds the `serv
 
 ## Future development tasks
 
-- [ ] Backup key files to GitHub private repo
 - [ ] Add more suppliers: _morningstar, openfigi, ycharts_
 - [ ] Add smoke tests
 - [ ] Log failing smoke tests to Discord
