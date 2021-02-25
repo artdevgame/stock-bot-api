@@ -2,7 +2,7 @@
 
 Retrieve info related to dividend stocks.
 
-> You might be also be interested in: [`stock-bot`](https://github.com/artdevgame/stock-bot)
+> You might also be interested in: [`stock-bot`](https://github.com/artdevgame/stock-bot)
 
 ## Requirements
 
@@ -103,9 +103,9 @@ curl --location --request POST 'http://localhost:3000/graphql' \
 
 #### Why do I need to pass in the entire instrument when retrieving dividend information?
 
-The API is an aggregator of data across different suppliers. Some of these suppliers identify stocks using the ISIN, others the stock symbol (ticker). If one supplier can't find the information, the API takes care of asking another one for it, so we need as many possible identifiers for the same stock as possible to enable more fallback options.
+The API is an aggregator of data across different suppliers. Some of these suppliers identify stocks using the ISIN, others use the stock symbol (ticker). If one supplier can't find the information, the API takes care of asking another one for it, so we need as many possible identifiers for the same stock as possible to enable more fallback options.
 
-The company name is used for logging purposes, it helps me identify problems should they occur, as it's a little more readable that the ISIN or symbol.
+The company name is used for logging purposes, it helps me identify problems should they occur.
 
 ## <a name="authentication"></a> Authentication
 
@@ -138,7 +138,7 @@ curl --location --request POST 'http://localhost:3000/api/key-store' \
 
 If a consumer makes more requests than the `server.apiLimit.maxRequestsPerMinute` value in the config (default: 300), they will receive a HTTP 429 response.
 
-If the consumer continues to make requests whilst limited, and exceeds the `server.apiLimit.banAfterMaxHttp429Responses` value in the config (default: 30), the API key will be banned.
+If the consumer continues to make requests whilst limited, and exceeds the `server.apiLimit.banAfterMaxHttp429Responses` value in the config (default: 30), the API key will be banned and the response code will be HTTP 409.
 
 ## Future development tasks
 
