@@ -1,5 +1,7 @@
+import { valid as isSymbolValid } from 'check-ticker-symbol';
 import config from 'config';
 import fs from 'fs';
+import { isIsinValid } from 'js-isin-validator';
 
 import { logger } from '../helpers/logger';
 import * as promiseHelper from '../helpers/promise';
@@ -14,14 +16,11 @@ type Trading212Client = typeof import('./trading212.com/client');
 
 type ImportedClient = DividendMaxClient | FinkiIOClient | InvestingClient | Trading212Client;
 
-type SupplierConfig = Record<string, { enabled: boolean }>;
-
 async function getSuppliers(suppliers: string[]) {
   const promises: Promise<ImportedClient>[] = suppliers.reduce((prev, supplier) => {
     const supplierPath = `${__dirname}/${supplier}/client.ts`;
-    const supplierConfig = (config.get('suppliers') as SupplierConfig)[supplier];
 
-    if (supplierConfig.enabled && fs.existsSync(supplierPath)) {
+    if (fs.existsSync(supplierPath)) {
       return [...prev, import(supplierPath)];
     }
 
@@ -67,6 +66,10 @@ export async function fetchDividend({ instrument }: FetchDividend) {
 export async function fetchInstrumentWithIsin({ isin }: FetchInstrumentWithIsin) {
   logger.info(`Fetching instrument with ISIN: ${isin}`);
 
+  if (!isIsinValid(isin)) {
+    throw new Error(`ISIN is invalid: ${isin}`);
+  }
+
   const cachedInstrument = await readFromRedis(`instrument-isin-${isin}`);
 
   if (cachedInstrument) {
@@ -92,6 +95,10 @@ export async function fetchInstrumentWithIsin({ isin }: FetchInstrumentWithIsin)
 
 export async function fetchInstrumentWithSymbol({ symbol }: FetchInstrumentWithSymbol) {
   logger.info(`Fetching instrument with symbol: ${symbol}`);
+
+  if (!isSymbolValid(symbol)) {
+    throw new Error(`Symbol is invalid: ${symbol}`);
+  }
 
   const cachedInstrument = await readFromRedis(`instrument-symbol-${symbol}`);
 

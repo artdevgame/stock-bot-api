@@ -9,5 +9,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
+  },
+  "files": ["@types/check-ticker-symbol.d.ts", "@types/js-isin-validator.d.ts"],
+  "ts-node": {
+    "files": true
   }
 }

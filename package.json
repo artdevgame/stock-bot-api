@@ -18,7 +18,7 @@
     "@types/node-fetch": "2.5.8",
     "@types/pino": "6.3.5",
     "@types/pino-multi-stream": "5.1.0",
-    "@types/uuid": "^8.3.0",
+    "@types/uuid": "8.3.0",
     "@typescript-eslint/eslint-plugin": "4.14.0",
     "@typescript-eslint/parser": "4.14.0",
     "eslint": "7.18.0",
@@ -29,6 +29,7 @@
     "typescript": "4.1.5"
   },
   "dependencies": {
+    "check-ticker-symbol": "1.0.0",
     "config": "3.3.3",
     "dayjs": "1.10.4",
     "fastify": "3.12.0",
@@ -36,12 +37,13 @@
     "form-data": "4.0.0",
     "graphql": "15.5.0",
     "ioredis": "4.22.0",
+    "js-isin-validator": "1.0.3",
     "mercurius": "7.0.0",
     "node-fetch": "2.6.1",
     "node-html-parser": "2.1.0",
     "pino": "6.11.1",
     "pino-multi-stream": "5.2.0",
     "pino-pretty": "4.5.0",
-    "uuid": "^8.3.2"
+    "uuid": "8.3.2"
   }
 }
