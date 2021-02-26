@@ -26,7 +26,7 @@ export async function fetchInstrumentWithIsin({ isin }: FetchInstrumentWithIsin)
 
   logger.info(`Filtering trading212.com instruments: ${isin}`);
 
-  const instrument = instruments.find((i) => i.isin === isin);
+  const instrument = instruments.find((i) => i.isin === isin && !i.priorityIndex);
 
   if (typeof instrument === 'undefined') {
     throw new Error(`Unable to find instrument on trading212.com: ${isin}`);

@@ -40,31 +40,32 @@ export interface Income extends FinancialStatement {
 }
 
 export interface Instrument {
-  id: number; // 2672
-  name: string; // 'O'
-  prettyName: string; // 'Realty Income'
+  baseCode: string; // 'O_US_EQ'
   code: string; // 'O_US_EQ'
-  type: 'STOCK'; // 'STOCK'
+  countryOfOrigin: string; // 'US'
   currency: string; // 'USD'
-  group: string; // 'BATS US'
-  isin: string; // 'US7561091049'
-  price: InstrumentPrice; // { buy: 62.44; sell: 62.46; }
-  realPrice: InstrumentPrice; // { buy: 62.44; sell: 62.46; }
-  minTrade: number; // 0.01
-  precision: number; // 2
-  minTradeSizeCoefficient: number; // 0
-  insignificantDigits: number; // 0
   description: string; // 'Realty Income Corporation'
   enabled: boolean; // true
-  suspended: boolean; // false
-  marketId: number; // 56
-  shortPercent: number; // 0
-  baseCode: string; // 'O_US_EQ'
-  maxPendingDist: number; // 50.0
+  group: string; // 'BATS US'
+  id: number; // 2672
+  insignificantDigits: number; // 0
+  isin: string; // 'US7561091049'
   margin: number; // 1.0
+  marketId: number; // 56
+  maxPendingDist: number; // 50.0
+  minTrade: number; // 0.01
+  minTradeSizeCoefficient: number; // 0
+  name: string; // 'O'
+  precision: number; // 2
+  prettyName: string; // 'Realty Income'
+  price: InstrumentPrice; // { buy: 62.44; sell: 62.46; }
+  priorityIndex?: number; // 83.33
   quantity: number; // 0.0
   quantityPrecision: number; // 8
-  countryOfOrigin: string; // 'US'
+  realPrice: InstrumentPrice; // { buy: 62.44; sell: 62.46; }
+  shortPercent: number; // 0
+  suspended: boolean; // false
+  type: 'STOCK'; // 'STOCK'
 }
 
 export interface InstrumentPrice {

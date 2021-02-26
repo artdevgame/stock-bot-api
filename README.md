@@ -140,8 +140,10 @@ If a consumer makes more requests than the `server.apiLimit.maxRequestsPerMinute
 
 If the consumer continues to make requests whilst limited, and exceeds the `server.apiLimit.banAfterMaxHttp429Responses` value in the config (default: 30), the API key will be banned and the response code will be HTTP 409.
 
+## Integration Tests
+
+Run `yarn test:integration` from the Fastify container to test the suppliers are working as expected.
+
 ## Future development tasks
 
 - [ ] Add more suppliers: _morningstar, openfigi, ycharts_
-- [ ] Add smoke tests
-- [ ] Log failing smoke tests to Discord
