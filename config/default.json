@@ -10,7 +10,7 @@
   },
   "debug": false,
   "dividends": {
-    "fetchDividend": ["trading212.com", "investing.com", "dividendmax.com"]
+    "fetchDividend": ["investing.com", "dividendmax.com", "trading212.com"]
   },
   "instruments": {
     "fetchWithIsin": ["trading212.com", "investing.com"],
