@@ -97,12 +97,6 @@ curl --location --request POST 'http://localhost:3000/graphql' \
 }
 ```
 
-#### Why do I need to pass in the entire instrument when retrieving dividend information?
-
-The API is an aggregator of data across different suppliers. Some of these suppliers identify stocks using the ISIN, others use the stock symbol (ticker). If one supplier can't find the information, the API takes care of asking another one for it, so we need as many possible identifiers for the same stock as possible to enable more fallback options.
-
-The company name is used for logging purposes, it helps me identify problems should they occur.
-
 ## <a name="authentication"></a> Authentication
 
 An API key is used as an anonymous way to rate limit the service.
