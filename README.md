@@ -29,7 +29,7 @@ curl --location --request POST 'http://localhost:3000/graphql' \
 --header 'x-api-key: [YOUR API KEY]' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "query": "query { fetchInstrumentWithIsin(isin: \"US5949181045\") { isin name symbol } }"
+    "query": "query { fetchInstrumentWithIsin(isin: \"US5949181045\") { id } }"
 }'
 ```
 
@@ -54,7 +54,7 @@ curl --location --request POST 'http://localhost:3000/graphql' \
 --header 'x-api-key: [YOUR API KEY]' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "query": "query { fetchInstrumentWithSymbol(symbol: \"MSFT\") { isin name symbol } }"
+    "query": "query { fetchInstrumentWithSymbol(symbol: \"MSFT\") { id } }"
 }'
 ```
 
