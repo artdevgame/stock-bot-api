@@ -10,7 +10,7 @@
   },
   "debug": false,
   "dividends": {
-    "fetchDividend": ["investing.com", "dividendmax.com", "trading212.com"]
+    "fetchDividend": ["trading212.com", "ft.com", "investing.com", "dividendmax.com"]
   },
   "instruments": {
     "fetchWithIsin": ["trading212.com", "investing.com"],
@@ -25,6 +25,7 @@
       "maxRequestsPerMinute": 300
     },
     "authKey": "",
+    "instrumentUuidNamespace": "e7c62e36-ebea-4ab0-b7a0-d1d8266b1ba8",
     "port": 3000
   },
   "suppliers": {

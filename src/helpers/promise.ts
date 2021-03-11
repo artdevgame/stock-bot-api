@@ -1,3 +1,5 @@
+import { NotADividendStockError } from '../errors/NotADividendStockError';
+
 export type DestructuredPromise<ReturnType> = [fn: (params: unknown) => Promise<ReturnType>, params: unknown];
 
 export async function first<ReturnType>(promiseSet: DestructuredPromise<ReturnType>[]): Promise<ReturnType> {

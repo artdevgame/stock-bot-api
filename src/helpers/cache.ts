@@ -9,6 +9,7 @@ interface GetCachePath {
 }
 
 interface PruneCache {
+  filename?: string;
   path: string;
 }
 
@@ -38,7 +39,7 @@ function getCachePath({ filename, path }: GetCachePath) {
   return `${path}/${filename}`;
 }
 
-export function pruneCache({ path }: PruneCache) {
+export function pruneCache({ filename, path }: PruneCache) {
   const purgePath = `${path}/${PURGE_FILENAME}`;
 
   if (fs.existsSync(purgePath)) {
@@ -46,7 +47,10 @@ export function pruneCache({ path }: PruneCache) {
 
     if (dayjs(purgeAt).isBefore(dayjs())) {
       logger.info(`Pruning cache: ${path}`);
-      fs.rmSync(path, { recursive: true, force: true });
+
+      typeof filename !== 'undefined'
+        ? fs.rmSync(`${path}/${filename}`)
+        : fs.rmSync(path, { recursive: true, force: true });
     }
   }
 }

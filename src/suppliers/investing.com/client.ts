@@ -2,11 +2,12 @@ import FormData from 'form-data';
 import fetch from 'node-fetch';
 import { parse, HTMLElement } from 'node-html-parser';
 
+import { getInstrumentId } from '..';
 import { NotADividendStockError } from '../../errors/NotADividendStockError';
 import * as cache from '../../helpers/cache';
 import { logger } from '../../helpers/logger';
 import { round } from '../../helpers/number';
-import { Dividend, FetchDividend, FetchInstrumentWithIsin, Instrument } from '../types';
+import { Dividend, FetchInstrumentWithIsinParams, FetchSupplierDividendParams, Instrument } from '../types';
 import { SearchResults, Quote } from './types';
 
 const { ContentType } = cache;
@@ -132,7 +133,7 @@ function parseDividend({ html }: ParseDividend) {
   return dividend;
 }
 
-export async function fetchDividend({ instrument }: FetchDividend) {
+export async function fetchDividend({ instrument }: FetchSupplierDividendParams) {
   const { isin } = instrument;
 
   logger.info(`Fetching dividend information from investing.com: ${isin}`);
@@ -145,15 +146,19 @@ export async function fetchDividend({ instrument }: FetchDividend) {
   return { dividendYield } as Dividend;
 }
 
-export async function fetchInstrumentWithIsin({ isin }: FetchInstrumentWithIsin) {
+export async function fetchInstrumentWithIsin({ isin }: FetchInstrumentWithIsinParams) {
   try {
     logger.info(`Fetching instrument from investing.com: ${isin}`);
     const searchResult = await fetchSearchResult({ isin });
+    const { name, symbol } = searchResult;
+
+    const id = getInstrumentId({ isin });
 
     return {
+      id,
       isin,
-      name: searchResult.name,
-      symbol: searchResult.symbol,
+      name,
+      symbol,
     } as Instrument;
   } catch (err) {
     throw new Error(`Unable to find instrument on investing.com: ${isin}`);

@@ -11,15 +11,15 @@ interface CalculateDividendYield {
   isin: string;
 }
 
-interface FetchDividendsForSymbol {
+interface FetchDividendParamssForSymbol {
   symbol: string;
 }
 
-interface FetchDividendIsin {
+interface FetchDividendParamsIsin {
   symbol: string;
 }
 
-interface FetchDividendYield {
+interface FetchDividendParamsYield {
   symbol: string;
   isin: string;
 }
@@ -52,7 +52,7 @@ async function calculateDividendYield({ cacheOptions, symbol, isin }: CalculateD
   }
 }
 
-async function fetchDividendIsin({ symbol }: FetchDividendIsin): Promise<string> {
+async function fetchDividendIsin({ symbol }: FetchDividendParamsIsin): Promise<string> {
   const cacheOptions = { contentType: ContentType.TEXT, filename: 'isin.txt', path: `${__dirname}/.cache/${symbol}` };
   const cachedIsin = cache.readFromCache<string>(cacheOptions);
 
@@ -73,7 +73,7 @@ async function fetchDividendIsin({ symbol }: FetchDividendIsin): Promise<string>
   return isin;
 }
 
-async function fetchDividendYield({ isin, symbol }: FetchDividendYield) {
+async function fetchDividendYield({ isin, symbol }: FetchDividendParamsYield) {
   const cacheOptions = { filename: 'dividend-yield.txt', path: `${__dirname}/.cache/${symbol}` };
   const cachedDividendYield = cache.readFromCache<string>(cacheOptions);
 
@@ -111,7 +111,7 @@ async function hasError(apiResponse: Response) {
   );
 }
 
-export async function fetchDividendsForSymbol({ symbol }: FetchDividendsForSymbol) {
+export async function fetchDividendsForSymbol({ symbol }: FetchDividendParamssForSymbol) {
   try {
     const isin = await fetchDividendIsin({ symbol });
 

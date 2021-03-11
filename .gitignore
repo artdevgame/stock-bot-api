@@ -5,3 +5,4 @@ config/development.json
 yarn.lock
 src/auth/key-store.json
 *-error.log
+src/suppliers/instruments.json

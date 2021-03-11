@@ -10,7 +10,7 @@ import pino from 'pino';
 
 import { Octokit } from '@octokit/rest';
 
-export const logger = pino({ level: 'debug', prettyPrint: true });
+const logger = pino({ level: 'debug', prettyPrint: true });
 
 interface GitHubConfig {
   accessToken: string;
@@ -29,6 +29,10 @@ interface Push extends Omit<GitHubConfig, 'accessToken'> {
 
 type Base64EncodedFileContents = string;
 type GitHubFilePath = string;
+
+function getFileContents(path: string) {
+  return fs.readFileSync(path).toString('utf8');
+}
 
 async function push(github: Octokit, { owner, repo, base, head, changes }: Push) {
   let response;
@@ -89,12 +93,18 @@ async function run() {
     auth: accessToken,
   });
 
+  const pathMap = {
+    auth: `${__dirname}/../src/auth`,
+    suppliers: `${__dirname}/../src/suppliers`,
+  };
+
   const changes = {
     files: {
-      'auth/key-store.json': fs.readFileSync(`${__dirname}/../src/auth/key-store.json`).toString('utf8'),
-      'suppliers/trading212.com/instruments.json': fs
-        .readFileSync(`${__dirname}/../src/suppliers/trading212.com/.cache/instruments/instruments.json`)
-        .toString('utf8'),
+      'auth/key-store.json': getFileContents(`${pathMap.auth}/key-store.json`),
+      'suppliers/instruments.json': getFileContents(`${pathMap.suppliers}/instruments.json`),
+      'suppliers/trading212.com/instruments.json': getFileContents(
+        `${pathMap.suppliers}/trading212.com/.cache/instruments/instruments.json`,
+      ),
     },
     commit: `${dayjs().format('YYYY-MM-DD')}: Backup from stock-bot-api`,
   };
@@ -103,7 +113,7 @@ async function run() {
 
   await push(github, { ...githubConfig, changes });
 
-  logger.info(`[Process complete]`);
+  logger.info(`[Process complete: backup]`);
 }
 
 run();

@@ -5,13 +5,13 @@ jest.mock('../../helpers/logger');
 jest.mock('../../helpers/redis');
 
 const expectedInstrument = {
-  id: '26e1da13-50db-510c-8e41-e0bb4585fbde',
-  isin: 'US7561091049',
-  name: 'Realty Income',
-  symbol: 'O',
+  id: '63fbade6-de1d-5935-b9a2-059e3f1091e7',
+  isin: 'US0378331005',
+  name: 'Apple Inc',
+  symbol: 'AAPL',
 };
 
-describe('trading212.com smoke test', () => {
+describe('morningstar.co.uk smoke test', () => {
   test('fetchDividend', async () => {
     const dividend = await supplier.fetchDividend({ instrument: expectedInstrument });
     expect(dividend).toHaveProperty('dividendYield');
@@ -19,12 +19,7 @@ describe('trading212.com smoke test', () => {
   });
 
   test('fetchInstrumentWithIsin', async () => {
-    const instrument = await supplier.fetchInstrumentWithIsin({ isin: 'US7561091049' });
-    expect(instrument).toEqual(expectedInstrument);
-  });
-
-  test('fetchInstrumentWithSymbol', async () => {
-    const instrument = await supplier.fetchInstrumentWithSymbol({ symbol: 'O' });
+    const instrument = await supplier.fetchInstrumentWithSymbol({ symbol: 'AAPL' });
     expect(instrument).toEqual(expectedInstrument);
   });
 });

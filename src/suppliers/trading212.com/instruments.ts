@@ -24,7 +24,7 @@ export async function fetchInstruments() {
     throw new Error(`Unable to fetch all instruments from trading212.com`);
   }
 
-  const instruments: Instrument[] = await instrumentRes.json();
+  const instruments: Instrument[] = (await instrumentRes.json()).filter(Boolean);
 
   cache.writeToCache(instruments, cacheOptions);
 

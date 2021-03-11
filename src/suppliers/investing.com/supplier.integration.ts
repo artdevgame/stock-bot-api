@@ -5,6 +5,7 @@ jest.mock('../../helpers/logger');
 jest.mock('../../helpers/redis');
 
 const expectedInstrument = {
+  id: '26e1da13-50db-510c-8e41-e0bb4585fbde',
   isin: 'US7561091049',
   name: 'Realty Income Corp',
   symbol: 'O',

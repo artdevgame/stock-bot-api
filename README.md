@@ -38,10 +38,8 @@ curl --location --request POST 'http://localhost:3000/graphql' \
 ```
 {
     "data": {
-        "fetchInstrumentWithSymbol": {
-            "isin": "US5949181045",
-            "name": "Microsoft",
-            "symbol": "MSFT"
+        "fetchInstrumentWithIsin": {
+            "id": "17ae97b6-94cc-5543-b671-b862b1a6d5b7"
         }
     }
 }
@@ -66,9 +64,7 @@ curl --location --request POST 'http://localhost:3000/graphql' \
 {
     "data": {
         "fetchInstrumentWithSymbol": {
-            "isin": "US5949181045",
-            "name": "Microsoft",
-            "symbol": "MSFT"
+            "id": "17ae97b6-94cc-5543-b671-b862b1a6d5b7"
         }
     }
 }
@@ -85,7 +81,7 @@ curl --location --request POST 'http://localhost:3000/graphql' \
 --header 'x-api-key: c7dd7869-d701-4259-8d36-18dd295ebb49' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "query": "query { fetchDividend(instrument: { isin: \"US5949181045\", name: \"Microsoft\", symbol: \"MSFT\" }){ dividendYield } }"
+    "query": "query { fetchDividend(id: \"17ae97b6-94cc-5543-b671-b862b1a6d5b7\"){ dividendYield } }"
 }'
 ```
 
@@ -146,4 +142,7 @@ Run `yarn test:integration` from the Fastify container to test the suppliers are
 
 ## Future development tasks
 
-- [ ] Add more suppliers: _morningstar, openfigi, ycharts_
+- Break dividend cache
+- Config option to allow supplier preference for stock yield
+- Add dividend payout ratio
+- Add dividend next payment date

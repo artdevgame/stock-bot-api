@@ -7,7 +7,9 @@ import { v4 as uuid } from 'uuid';
 
 import * as keyManager from './auth/key-manager';
 import { resolvers, schema } from './graphql';
+import { logger } from './helpers/logger';
 import { createApiKeySchema } from './http/schema';
+import { preheatInstrumentCache } from './suppliers';
 
 const app = fastify();
 
@@ -81,7 +83,15 @@ app.post('/api/key-store', { schema: { body: createApiKeySchema } }, (req, reply
 app.register(mercurius, { resolvers, schema, graphiql: true });
 
 async function run() {
+  const instruments = await preheatInstrumentCache();
+
+  if (typeof instruments !== 'undefined') {
+    logger.info(`Instrument cache pre-heated: ${instruments.length} items cached`);
+  }
+
   await app.listen(config.get('server.port'), '0.0.0.0');
+
+  logger.info(`stock-bot-api ready`);
 }
 
 run();

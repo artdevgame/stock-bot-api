@@ -1,17 +1,21 @@
 import { fetchDividend, fetchInstrumentWithIsin, fetchInstrumentWithSymbol } from '../suppliers';
-import { FetchDividend, FetchInstrumentWithIsin, FetchInstrumentWithSymbol } from '../suppliers/types';
+import {
+  FetchDividendParams,
+  FetchInstrumentWithIsinParams,
+  FetchInstrumentWithSymbolParams,
+} from '../suppliers/types';
 
 export const resolvers = {
   Query: {
-    fetchDividend: async (obj: unknown, { instrument }: FetchDividend) => {
-      return fetchDividend({ instrument });
+    fetchDividend: async (obj: unknown, { id }: FetchDividendParams) => {
+      return fetchDividend({ id });
     },
 
-    fetchInstrumentWithIsin: async (obj: unknown, { isin }: FetchInstrumentWithIsin) => {
+    fetchInstrumentWithIsin: async (obj: unknown, { isin }: FetchInstrumentWithIsinParams) => {
       return fetchInstrumentWithIsin({ isin });
     },
 
-    fetchInstrumentWithSymbol: async (obj: unknown, { symbol }: FetchInstrumentWithSymbol) => {
+    fetchInstrumentWithSymbol: async (obj: unknown, { symbol }: FetchInstrumentWithSymbolParams) => {
       return fetchInstrumentWithSymbol({ symbol });
     },
   },

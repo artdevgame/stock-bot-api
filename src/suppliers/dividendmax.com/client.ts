@@ -5,7 +5,7 @@ import { NotADividendStockError } from '../../errors/NotADividendStockError';
 import * as cache from '../../helpers/cache';
 import { logger } from '../../helpers/logger';
 import { round } from '../../helpers/number';
-import { FetchDividend } from '../types';
+import { FetchSupplierDividendParams } from '../types';
 import { SearchResult } from './types';
 
 const { ContentType } = cache;
@@ -131,7 +131,7 @@ function parseDividend({ html }: ParseDividend): Dividend {
   return dividend;
 }
 
-export async function fetchDividend({ instrument }: FetchDividend) {
+export async function fetchDividend({ instrument }: FetchSupplierDividendParams) {
   const { isin, symbol } = instrument;
 
   logger.info(`Fetching dividend information from dividendmax.com: ${isin}`);

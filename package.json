@@ -35,7 +35,6 @@
   },
   "dependencies": {
     "@octokit/rest": "18.2.1",
-    "check-ticker-symbol": "1.0.0",
     "config": "3.3.3",
     "dayjs": "1.10.4",
     "fastify": "3.12.0",
@@ -45,6 +44,7 @@
     "ioredis": "4.22.0",
     "js-isin-validator": "1.0.3",
     "mercurius": "7.0.0",
+    "neat-csv": "6.0.1",
     "node-fetch": "2.6.1",
     "node-html-parser": "2.1.0",
     "pino": "6.11.1",
